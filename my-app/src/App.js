@@ -31,6 +31,22 @@ const App = () => {
     getAllUsers();
   }, []);
 
+  // delete user
+  const handleDelete = (id) => {
+    fetch(URL + `/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw Error("could not delete");
+        }
+        getAllUsers();
+      })
+      .catch((err) => {
+        setError(error.message);
+      });
+  };
+
   return (
     <div className="App">
       <h1>User Managment App</h1>
@@ -46,7 +62,9 @@ const App = () => {
                 <p>{username}</p>
                 <p>{email}</p>
                 <button className="btn">Edit</button>
-                <button className="btn">Delete</button>
+                <button className="btn" onClick={handleDelete(id)}>
+                  Delete
+                </button>
               </article>
             );
           })}
