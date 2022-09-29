@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
 import "./App.css";
+import React, { useState, useEffect } from "react";
 
-import UserForm from "./Components/UserForm";
-
-const URL = "https://rest-api-without-db.herokuapp.com/users";
+const URL = "https://jsonplaceholder.typicode.com/users";
 
 const App = () => {
   const [users, setUsers] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
+  const [error, setError] = useState(null);
   const getAllUsers = () => {
     fetch(URL)
       .then((res) => {
@@ -19,10 +17,11 @@ const App = () => {
         return res.json();
       })
       .then((data) => {
-        setUsers(data.users);
+        console.log(data);
+        setUsers(data);
       })
       .catch((err) => {
-        setError(error.message);
+        setError(err.message);
       })
       .finally(() => {
         setIsLoading(false);
@@ -32,62 +31,21 @@ const App = () => {
   useEffect(() => {
     getAllUsers();
   }, []);
-
-  // delete user
-  const handleDelete = (id) => {
-    fetch(URL + `/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw Error("could not delete");
-        }
-        getAllUsers();
-      })
-      .catch((err) => {
-        setError(error.message);
-      });
-  };
-
-  const addUser = (user) => {
-    fetch(URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    })
-      .then((res) => {
-        if (res.status === 201) {
-          getAllUsers();
-        } else {
-          throw new Error("could not creat new user");
-        }
-      })
-      .catch((err) => {
-        setError(error.message);
-      });
-  };
-
   return (
     <div className="App">
       <h1>User Managment App</h1>
-      {isLoading && <h2> Loading ....</h2>}
+      {isLoading && <h2>Loading....</h2>}
       {error && <h2>{error}</h2>}
-
-      <UserForm btnText="Add User" handleSubmitData={addUser} />
       <section>
         {users &&
           users.map((user) => {
             const { id, username, email } = user;
             return (
-              <article key={id} className="card">
+              <article className="card" key={id}>
                 <p>{username}</p>
                 <p>{email}</p>
                 <button className="btn">Edit</button>
-                <button className="btn" onClick={handleDelete(id)}>
-                  Delete
-                </button>
+                <button className="btn">Delete</button>
               </article>
             );
           })}
